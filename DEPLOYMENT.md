@@ -19,7 +19,7 @@
 | Mục | Nội dung |
 |-----|----------|
 | Public URL | https://day12-agent-production-1b0f.up.railway.app |
-| Platform | Railway (build từ `Dockerfile`, cấu hình `railway.toml`, app ở region US West) |
+| Platform | Railway (build từ `Dockerfile`, cấu hình `railway.toml`, region Southeast Asia, cùng region với Redis) |
 | Ngày deploy | 2026-09-28 |
 
 ## Biến Môi Trường Đã Set Trên Cloud
