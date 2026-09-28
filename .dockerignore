@@ -28,6 +28,7 @@ screenshots/
 *.md
 grade.py
 docker-compose.yml
+docker-compose.override.yml
 nginx/
 render.yaml
 
