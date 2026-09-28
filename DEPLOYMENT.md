@@ -10,17 +10,17 @@
 
 | Mục | Nội dung |
 |-----|----------|
-| Họ và tên | (điền họ tên) |
-| Mã học viên | (điền mã học viên) |
-| Repo | (điền link repo K4-L3A-DAY12-HoVaTen-MSSV-CloudServicesAndDeployment) |
+| Họ và tên | Dinh Cong Tu |
+| Mã học viên | 2A202602479 |
+| Repo | https://github.com/TuTune04/K4-L3A-DAY12-DinhCongTu-2A202602479-CloudServicesAndDeployment |
 
 ## Service
 
 | Mục | Nội dung |
 |-----|----------|
-| Public URL | https://TODO-thay-bang-url-that.up.railway.app |
-| Platform | Railway / Render / Cloud Run — (điền platform bạn dùng) |
-| Ngày deploy | (điền ngày) |
+| Public URL | https://day12-agent-production-1b0f.up.railway.app |
+| Platform | Railway (build từ `Dockerfile`, cấu hình `railway.toml`, region Southeast Asia) |
+| Ngày deploy | 2026-09-28 |
 
 ## Biến Môi Trường Đã Set Trên Cloud
 
@@ -28,9 +28,9 @@ Ghi tên biến và **nguồn giá trị**, không ghi giá trị:
 
 | Biến | Đã set | Ghi chú |
 |------|--------|---------|
-| `PORT` | ✅ | platform tự gán |
-| `AGENT_API_KEY` | ✅ | đặt trong dashboard, không nằm trong repo |
-| `REDIS_URL` | ✅ | (điền: Redis add-on của platform / Upstash / ...) |
+| `PORT` | ✅ | Railway tự gán (đang là 8080), app đọc qua `${PORT}` trong CMD của Dockerfile |
+| `AGENT_API_KEY` | ✅ | đặt qua `railway variables`, khóa production riêng, khác khóa local, không nằm trong repo |
+| `REDIS_URL` | ✅ | Redis service của Railway, reference variable `${{Redis.REDIS_URL}}` → mạng private `redis.railway.internal` |
 | `RATE_LIMIT_PER_MINUTE` | ✅ | 10 |
 | `MONTHLY_BUDGET_USD` | ✅ | 10.0 |
 | `LOG_LEVEL` | ✅ | INFO |
@@ -72,9 +72,33 @@ done; echo
 
 Dán output của các lệnh trên vào đây:
 
+Chạy ngày 2026-09-28, `<URL>` = Public URL ở trên, API key truyền qua biến môi trường:
+
 ```
-(điền output)
+$ curl -i <URL>/health
+HTTP/2 200 
+content-type: application/json
+{"status":"ok","service":"day12-agent","version":"1.0.0"}
+
+$ curl -i <URL>/ready
+HTTP/2 200 
+content-type: application/json
+{"status":"ready","redis":true}
+
+$ curl -i -X POST <URL>/ask (không có API key)
+HTTP/2 401 
+{"detail":"invalid or missing API key"}
+
+$ curl -i -X POST <URL>/ask (có API key)
+HTTP/2 200 
+{"answer":"Câu hỏi hay. Deploy là gì thường được giải quyết bằng cách chuẩn hóa môi trường chạy: cùng một image chạy giống nhau ở laptop và trên cloud. (Mình đang nhớ 2 lượt trao đổi trước đó.)","user_id":"sv-test","history_length":2,"cost_usd":3.315e-05,"tokens":{"in":41,"out":45}}
+
+$ rate limit — 15 lần liên tiếp
+200 200 200 200 200 200 200 200 200 429 429 429 429 429 429
 ```
+
+Lượt `/ask` có key thấy `history_length: 2` vì đã gọi thử 1 lần trước đó — lịch sử nằm trong Redis, không nằm trong process.
+Rate limit: 9 request đầu `200` (cộng lượt ở trên = 10/phút), từ request thứ 11 trả `429`.
 
 ## Ảnh Chụp Màn Hình
 
@@ -97,5 +121,5 @@ Không đăng ký được tài khoản cloud? Vẫn nộp được bài, nhưng
 5. Ghi rõ lý do không deploy được vào phần dưới đây:
 
 ```
-(điền lý do nếu dùng phương án dự phòng, ngược lại xóa mục này)
+Không dùng — đã deploy thành công lên Railway.
 ```
